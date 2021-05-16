@@ -1,0 +1,43 @@
+esphome:
+  includes:
+    - wiegand_device.h
+  name: front-door-reader
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: "xxx"
+  password: "xxx"
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Door-Reader Fallback Hotspot"
+    password: "xxx"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+sensor:
+- platform: custom
+  lambda: |-
+    auto wiegand = new WiegandReader(D1, D2);
+    App.register_component(wiegand);
+    return {wiegand};
+
+  sensors:
+    name: "Card ID"
+    on_value:
+      then:
+        - homeassistant.tag_scanned: !lambda |-
+            char buf[16];
+            sprintf(buf, "%.0f", x);
+            std::string s = buf;
+            return s;        
+            
