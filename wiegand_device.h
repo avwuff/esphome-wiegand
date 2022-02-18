@@ -142,7 +142,7 @@ class WiegandReader : public PollingComponent, public Sensor {
     
             if ((sysTick - _lastWiegand) > 25)								// if no more signal coming through after 25ms
             {
-                    if ((_bitCount==24) || (_bitCount==26) || (_bitCount==32) || (_bitCount==34) || (_bitCount==8) || (_bitCount==4))  	// bitCount for keypress=4 or 8, Wiegand 26=24 or 26, Wiegand 34=32 or 34
+                    if ((_bitCount==24) || (_bitCount==26) || (_bitCount==32) || (_bitCount==34) || (_bitCount==8) || (_bitCount==4) || (_bitCount==48))  	// bitCount for keypress=4 or 8, Wiegand 26=24 or 26, Wiegand 34=32 or 34
                     {    
                         _cardTemp >>= 1;			// shift right 1 bit to get back the real value - interrupt done 1 left shift in advance
                     
@@ -151,6 +151,7 @@ class WiegandReader : public PollingComponent, public Sensor {
         
                             // TODO: Handle validation failure case!
                         cardID = getCardId (&_cardTempHigh, &_cardTemp, _bitCount);
+                        ESP_LOGD("custom", "Card read high: %ld, low: %ld", _cardTempHigh, _cardTemp);
                         json_message2(cardID);
                         _wiegandType=_bitCount;
                         _bitCount=0;
